@@ -214,8 +214,8 @@ namespace Billing.API.Services.Invoice
             query += $" FROM {schema}.{queryData.Table} INV";
             query += "  INNER JOIN ( SELECT";
             query += "         T0.\"DocEntry\" ,";
-            query += "         min(T0.\"AtcEntry\") AS \"AtcEntry\" ,";
-            query += "         min(T0.\"AbsEntry\") AS \"AbsEntry\" ";
+            query += "         max(T0.\"AtcEntry\") AS \"AtcEntry\" ,";
+            query += "         max(T0.\"AbsEntry\") AS \"AbsEntry\" ";
             query += $"        FROM {schema}.oeml T0 ";
             query += $"        WHERE T0.\"ObjType\" = '{queryData.ObjType}' AND ";
             query += $"              (T0.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR T0.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%') ";
