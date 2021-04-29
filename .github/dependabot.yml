@@ -1,0 +1,72 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "09:00"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: chore
+      include: scope
+  - package-ecosystem: nuget
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "09:00"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: AutoFixture
+        versions:
+          - 4.15.0
+          - 4.16.0
+      - dependency-name: AutoFixture.Xunit2
+        versions:
+          - 4.15.0
+          - 4.16.0
+      - dependency-name: Microsoft.AspNetCore.Authentication.JwtBearer
+        versions:
+          - 5.0.2
+          - 5.0.3
+          - 5.0.4
+      - dependency-name: Microsoft.AspNetCore.Mvc.Testing
+        versions:
+          - 5.0.2
+          - 5.0.3
+          - 5.0.4
+      - dependency-name: Microsoft.NET.Test.Sdk
+        versions:
+          - 16.8.3
+          - 16.9.1
+      - dependency-name: coverlet.collector
+        versions:
+          - 3.0.2
+      - dependency-name: Moq
+        versions:
+          - 4.16.0
+    commit-message:
+      prefix: chore
+      include: scope
+  - package-ecosystem: docker
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "09:00"
+    open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: dotnet/core/sdk
+        versions:
+          - 3.1.405.pre.buster
+          - 3.1.406.pre.buster
+          - 3.1.407.pre.buster
+      - dependency-name: dotnet/core/aspnet
+        versions:
+          - 3.1.11.pre.buster.pre.slim
+          - 3.1.12.pre.buster.pre.slim
+          - 3.1.13.pre.buster.pre.slim
+      - dependency-name: node
+        versions:
+          - "15"
+    commit-message:
+      prefix: chore
+      include: scope
