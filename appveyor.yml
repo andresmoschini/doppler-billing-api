@@ -1,0 +1,50 @@
+version: 0.0.{build}
+image: Visual Studio 2017
+build: off
+test: off
+deploy: off
+skip_branch_with_pr: true
+environment:
+  TEST:
+    secure: sUrXRaSNWZJ154sh4iOCjg==
+  DOCKER_WRITTER_USERNAME: dopplerdock
+  DOCKER_WRITTER_PASSWORD:
+    secure: S+1NaSpeLGT5NWoVONZt315oZBJYo9TK1TOfpy/EkAsVQNXK+HtLICm3nSb7PvnL
+  DOCKER_IMAGE_NAME: dopplerdock/doppler-billing-api
+
+for:
+  - branches:
+      only:
+        - master
+        - INT
+        - PRODTEST
+    skip_non_tags: false
+    skip_tags: true
+    build_script:
+      - ps: |
+          if ("$env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT" -eq "")
+          {
+            # It is a branch
+            echo "$env:DOCKER_WRITTER_PASSWORD" | docker login -u="$env:DOCKER_WRITTER_USERNAME" --password-stdin
+            sh ./build-n-publish.sh --image="$env:DOCKER_IMAGE_NAME" --commit="$env:APPVEYOR_REPO_COMMIT" --name="$env:APPVEYOR_REPO_BRANCH" --platform=windows
+          }
+          elseif ("$env:DOCKER_WRITTER_PASSWORD" -ne "")
+          {
+            # It is a PR with access to our secrets
+            echo "$env:DOCKER_WRITTER_PASSWORD" | docker login -u="$env:DOCKER_WRITTER_USERNAME" --password-stdin
+            sh ./build-n-publish.sh --image="$env:DOCKER_IMAGE_NAME" --commit="$env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT" --name=pr-"$env:APPVEYOR_PULL_REQUEST_NUMBER" --platform=windows
+          }
+          else
+          {
+            # It is a PR without access to our secrets
+            echo "WARNING! Docker Hub credentials are not available, only building without pushing"
+            docker build .
+          }
+  - branches:
+      only:
+        - /v\d+\.\d+\.\d+.*/
+    skip_non_tags: true
+    skip_tags: false
+    build_script:
+      - ps: echo "$env:DOCKER_WRITTER_PASSWORD" | docker login -u="$env:DOCKER_WRITTER_USERNAME" --password-stdin
+      - ps: sh ./build-n-publish.sh --image="$env:DOCKER_IMAGE_NAME" --commit="$env:APPVEYOR_REPO_COMMIT" --version="$env:APPVEYOR_REPO_TAG_NAME" --platform=windows

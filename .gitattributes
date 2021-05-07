@@ -65,3 +65,10 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+###############################################################################
+# behavior for dynamic link libraries
+#
+# DLL files are treated as binary by default.
+###############################################################################
+*.dll   binary

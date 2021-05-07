@@ -1,8 +1,9 @@
+using Billing.API.DopplerSecurity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Billing.API
 {
@@ -18,27 +19,21 @@ namespace Billing.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDopplerSecurity();
-            services.AddTaxInfoProvider();
-            services.AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.WriteIndented = true;
-                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = false;
-                    options.JsonSerializerOptions.PropertyNamingPolicy = null!;
-                });
+            services.AddInvoiceService();
+
+            services.AddTransient<CryptoHelper>();
+
             services.AddCors();
+            // TODO: configure JSON to indent the results
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseStaticFiles();
-
-            app.UseRouting();
+            //if (env.IsDevelopment())
+            // Removed the condition IsDevelopment so the errors are thrown directly to the client
+            // and it is easier to debug, consider restoring the old behavior in the future.
+            app.UseDeveloperExceptionPage();
 
             app.UseCors(policy => policy
                 .SetIsOriginAllowed(isOriginAllowed: _ => true)
@@ -46,12 +41,9 @@ namespace Billing.API
                 .AllowAnyMethod()
                 .AllowCredentials());
 
-            app.UseAuthorization();
+            app.UseStaticFiles();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseMvc();
         }
     }
 }

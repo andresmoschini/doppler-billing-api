@@ -10,6 +10,10 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddDopplerSecurity(this IServiceCollection services)
         {
+            services.AddSingleton<IAuthorizationHandler, IsOwnResourceAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, IsSuperUserAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, IsSignedPathAuthorizationHandler>();
+
             services.ConfigureOptions<ConfigureDopplerSecurityOptions>();
 
             services
@@ -18,8 +22,25 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     o.DefaultPolicy = new AuthorizationPolicyBuilder()
                         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                        .AddRequirements(new DopplerAuthorizationRequirement
+                        {
+                            AllowSuperUser = true,
+                            AllowOwnResource = true
+                        })
                         .RequireAuthenticatedUser()
                         .Build();
+
+                    o.AddPolicy(DopplerSecurityDefaults.DEFAULT_OR_SIGNED_PATHS_POLICY, new AuthorizationPolicyBuilder()
+                        .AddAuthenticationSchemes(DopplerSecurityDefaults.SIGNED_PATH_SCHEME)
+                        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+                        .AddRequirements(new DopplerAuthorizationRequirement
+                        {
+                            AllowSuperUser = true,
+                            AllowOwnResource = true,
+                            AllowSignedPaths = true
+                        })
+                        .RequireAuthenticatedUser()
+                        .Build());
                 });
 
             services
@@ -36,7 +57,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     };
                 });
 
-            services.AddAuthentication().AddJwtBearer();
+            services.AddAuthentication()
+                .AddJwtBearer()
+                .AddScheme<SignedPathAuthenticationSchemeOptions, SignedPathAuthenticationHandler>(DopplerSecurityDefaults.SIGNED_PATH_SCHEME, _ => {});
 
             services.AddAuthorization();
 

@@ -5,6 +5,7 @@ indent_style = space
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
+end_of_line = lf
 
 
 [*.{xml,config,*proj,nuspec,props,resx,targets,yml,tasks}]
@@ -27,6 +28,9 @@ indent_size = 4
 charset = utf-8-bom
 indent_style = tab
 
-[{.vscode/**,**/Properties/launchSettings.json,*.[sS]ecret.*}]
+[{.vscode/**,**/Properties/launchSettings.json,*.[sS]ecret.*,**/obj/**,**/bin/**}]
 indent_size = unset
+indent_style = unset
 insert_final_newline = unset
+trim_trailing_whitespace = unset
+end_of_line = unset

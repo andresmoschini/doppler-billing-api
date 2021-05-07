@@ -1,23 +1,24 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.30223.230
-MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billing.API", "Billing.API\Billing.API.csproj", "{779FDAE5-672D-43F5-9065-BC4009A2E078}"
+VisualStudioVersion = 16.0.30428.66
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billing.API", "Billing.API\Billing.API.csproj", "{CB0CDD86-B40A-459C-9BE2-A634F7EA0BB7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billing.API.Test", "Billing.API.Test\Billing.API.Test.csproj", "{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Billing.API.Test", "Billing.API.Test\Billing.API.Test.csproj", "{537E02BF-07F3-4A70-8AA0-0B2C3EE075DB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2E7C59EC-883F-49F5-BEAE-C711C88D0D28}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D938CC9C-C41D-494B-98DF-DB62FE92D39B}"
 	ProjectSection(SolutionItems) = preProject
 		.dockerignore = .dockerignore
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		.prettierignore = .prettierignore
-		build-local.sh = build-local.sh
+		appveyor.yml = appveyor.yml
 		build-n-publish.sh = build-n-publish.sh
 		demo.http = demo.http
 		Dockerfile = Dockerfile
+		Dockerfile.verify = Dockerfile.verify
 		global.json = global.json
 		Jenkinsfile = Jenkinsfile
 		package.json = package.json
@@ -28,42 +29,22 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Debug|x64.Build.0 = Debug|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Debug|x86.Build.0 = Debug|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Release|Any CPU.Build.0 = Release|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Release|x64.ActiveCfg = Release|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Release|x64.Build.0 = Release|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Release|x86.ActiveCfg = Release|Any CPU
-		{779FDAE5-672D-43F5-9065-BC4009A2E078}.Release|x86.Build.0 = Release|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Debug|x64.Build.0 = Debug|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Debug|x86.Build.0 = Debug|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Release|x64.ActiveCfg = Release|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Release|x64.Build.0 = Release|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Release|x86.ActiveCfg = Release|Any CPU
-		{E947569E-C5EE-4FB2-9ECE-248F2C2F25E6}.Release|x86.Build.0 = Release|Any CPU
+		{CB0CDD86-B40A-459C-9BE2-A634F7EA0BB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB0CDD86-B40A-459C-9BE2-A634F7EA0BB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB0CDD86-B40A-459C-9BE2-A634F7EA0BB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB0CDD86-B40A-459C-9BE2-A634F7EA0BB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{537E02BF-07F3-4A70-8AA0-0B2C3EE075DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{537E02BF-07F3-4A70-8AA0-0B2C3EE075DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{537E02BF-07F3-4A70-8AA0-0B2C3EE075DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{537E02BF-07F3-4A70-8AA0-0B2C3EE075DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {4030EDC2-A09C-4502-B544-D82D7347FF01}
+		SolutionGuid = {48B0412E-5180-4342-AD7B-84FC1CCD0BD0}
 	EndGlobalSection
 EndGlobal

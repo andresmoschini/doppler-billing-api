@@ -9,6 +9,7 @@
 **/*.binlog
 **/*.cs
 **/*.csproj
+**/*.dll
 **/*.http
 **/*.ico
 **/*.sh
@@ -18,7 +19,9 @@
 **/bin/**
 **/obj/**
 **/Properties/launchSettings.json
-Dockerfile
+Dockerfile**
+**/*.pdf
 Jenkinsfile
 yarn.lock
 *.[sS]ecret.*
+*.key

@@ -16,11 +16,13 @@ export MSYS2_ARG_CONV_EXCL="*"
 echo Verify Format...
 docker build \
     --target verify-format \
+    --file Dockerfile.verify \
     .
 
 echo Verify .sh files...
 docker build \
     --target verify-sh \
+    --file Dockerfile.verify \
     .
 
 echo Restore...

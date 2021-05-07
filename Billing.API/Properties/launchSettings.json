@@ -12,7 +12,9 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "taxinfo/by-cuit/20-31111111-7",
+      //"launchUrl": "accounts/doppler/73689/invoice/Factura de deudores_580_20200514_175754.pdf",
+      "launchUrl": "accounts/doppler/73689/invoice/invoice_2020-09-03_198.pdf",
+      //"launchUrl": "accounts/doppler/73689/invoices",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +22,9 @@
     "Billing.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "taxinfo/by-cuit/20-31111111-7",
+      //"launchUrl": "accounts/doppler/73689/invoice/Factura de deudores_580_20200514_175754.pdf",
+      //"launchUrl": "accounts/doppler/73689/invoices",
+      "launchUrl": "accounts/doppler/73689/invoice/invoice_2020-09-03_198.pdf",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

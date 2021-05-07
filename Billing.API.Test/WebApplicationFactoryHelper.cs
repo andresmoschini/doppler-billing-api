@@ -1,11 +1,12 @@
+using System;
+using System.Collections.Generic;
 using Billing.API.DopplerSecurity;
-using Microsoft.AspNetCore.Authorization.Policy;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 
 namespace Billing.API.Test
 {
@@ -16,9 +17,21 @@ namespace Billing.API.Test
 
         public static WebApplicationFactory<Startup> WithBypassAuthorization(this WebApplicationFactory<Startup> factory)
             => factory.WithWebHostBuilder(
-                builder => builder.ConfigureTestServices(
-                    // TODO: review if this is the best way to bypass the authentication
-                    services => services.AddSingleton<IPolicyEvaluator, FakePolicyEvaluator>()));
+                builder => builder.ConfigureTestServices(services =>
+                {
+                    services
+                        .AddAuthentication("Test")
+                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
+                    services
+                        .AddOptions<AuthorizationOptions>()
+                        .Configure(o =>
+                        {
+                            o.DefaultPolicy = new AuthorizationPolicyBuilder()
+                                .AddAuthenticationSchemes("Test")
+                                .RequireAuthenticatedUser()
+                                .Build();
+                        });
+                }));
 
         public static WebApplicationFactory<Startup> ConfigureService<TOptions>(this WebApplicationFactory<Startup> factory, Action<TOptions> configureOptions) where TOptions : class
             => factory.WithWebHostBuilder(

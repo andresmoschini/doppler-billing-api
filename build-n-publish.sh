@@ -4,6 +4,13 @@ commit=""
 name=""
 version=""
 versionPre=""
+platform="linux"
+imageName=""
+
+if [ -n "${GIT_REF}" ]
+then
+  version="${GIT_REF#refs/tags/}"
+fi
 
 print_help () {
     echo ""
@@ -12,23 +19,28 @@ print_help () {
     echo "Build project's docker images and publish them to DockerHub"
     echo ""
     echo "Options:"
+    echo "  -i, --image, image name (mandatory)"
     echo "  -c, --commit (mandatory)"
-    echo "  -n, --name"
-    echo "  -v, --version"
+    echo "  -n, --name, version name"
+    echo "  -v, --version, version number (or set GIT_REF environment variable, ie: '/refs/tags/v0.0.14')"
     echo "  -s, --pre-version-suffix (optional, only with version)"
+    echo "  -p, --platform (optional, default linux)"
     echo "  -h, --help"
     echo "Only one of name or version parameters is required, and cannot be included together."
     echo
     echo "Examples:"
-    echo "  sh build-n-publish.sh --commit=aee25c286a7c8265e2b32ccc293f5ab0bd7a9d57 --version=v1.2.11"
-    echo "  sh build-n-publish.sh --commit=e247ba0527665eb9dd7ffbff00bb42e5073cd457 --version=v0.0.0 --pre-version-suffix=commit-e247ba0527665eb9dd7ffbff00bb42e5073cd457"
-    echo "  sh build-n-publish.sh -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5"
-    echo "  sh build-n-publish.sh -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5 -s=beta1"
-    echo "  sh build-n-publish.sh -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5 -s=pr123"
+    echo "  sh build-n-publish.sh --image=dopplerdock/doppler-billing-api --commit=aee25c286a7c8265e2b32ccc293f5ab0bd7a9d57 --version=v1.2.11"
+    echo "  sh build-n-publish.sh --image=dopplerdock/doppler-billing-api --commit=e247ba0527665eb9dd7ffbff00bb42e5073cd457 --version=v0.0.0 --pre-version-suffix=commit-e247ba0527665eb9dd7ffbff00bb42e5073cd457"
+    echo "  sh build-n-publish.sh -i=dopplerdock/doppler-billing-api -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5"
+    echo "  sh build-n-publish.sh -i=dopplerdock/doppler-billing-api -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5 -s=beta1"
+    echo "  sh build-n-publish.sh -i=dopplerdock/doppler-billing-api -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5 -s=pr123"
 }
 
 for i in "$@" ; do
 case $i in
+    -i=*|--image=*)
+    imageName="${i#*=}"
+    ;;
     -c=*|--commit=*)
     commit="${i#*=}"
     ;;
@@ -41,12 +53,22 @@ case $i in
     -s=*|--pre-version-suffix=*)
     versionPre="${i#*=}"
     ;;
+    -p=*|--platform=*)
+    platform="${i#*=}"
+    ;;
     -h|--help)
     print_help
     exit 0
     ;;
 esac
 done
+
+if [ -z "${imageName}" ]
+then
+  echo "Error: image parameter is mandatory"
+  print_help
+  exit 1
+fi
 
 if [ -z "${commit}" ]
 then
@@ -167,34 +189,43 @@ then
   canonicalTag=${versionFull}
 fi
 
-imageName=fromdoppler/doppler-billing-api
+platformSufix=""
+if [ "${platform}" != "linux" ]
+then
+  platformSufix="-${platform}"
+fi
+
+if [ "${platform}" = "linux" ]
+then
+  docker build \
+      --file Dockerfile.verify \
+      .
+fi
+
+echo "${versionFull}-${platform}" > wwwroot_extras/version.txt
 
 docker build \
-    -t "${imageName}:${canonicalTag}" \
-    --build-arg version="${versionFull}" \
+    -t "${imageName}:${canonicalTag}${platformSufix}" \
     .
-
-# TODO: It could break concurrent deployments with different docker accounts
-docker login -u="${DOCKER_WRITTER_USERNAME}" -p="${DOCKER_WRITTER_PASSWORD}"
 
 if [ -n "${version}" ]
 then
-    docker tag "${imageName}:${canonicalTag}" "${imageName}:${versionMayor}"
-    docker tag "${imageName}:${canonicalTag}" "${imageName}:${versionMayorMinor}"
-    docker tag "${imageName}:${canonicalTag}" "${imageName}:${versionMayorMinorPatch}"
-    docker tag "${imageName}:${canonicalTag}" "${imageName}:${versionMayorMinorPatchPre}"
+    docker tag "${imageName}:${canonicalTag}${platformSufix}" "${imageName}:${versionMayor}${platformSufix}"
+    docker tag "${imageName}:${canonicalTag}${platformSufix}" "${imageName}:${versionMayorMinor}${platformSufix}"
+    docker tag "${imageName}:${canonicalTag}${platformSufix}" "${imageName}:${versionMayorMinorPatch}${platformSufix}"
+    docker tag "${imageName}:${canonicalTag}${platformSufix}" "${imageName}:${versionMayorMinorPatchPre}${platformSufix}"
 
-    docker push "${imageName}:${canonicalTag}"
-    docker push "${imageName}:${versionMayorMinorPatchPre}"
-    docker push "${imageName}:${versionMayorMinorPatch}"
-    docker push "${imageName}:${versionMayorMinor}"
-    docker push "${imageName}:${versionMayor}"
+    docker push "${imageName}:${canonicalTag}${platformSufix}"
+    docker push "${imageName}:${versionMayorMinorPatchPre}${platformSufix}"
+    docker push "${imageName}:${versionMayorMinorPatch}${platformSufix}"
+    docker push "${imageName}:${versionMayorMinor}${platformSufix}"
+    docker push "${imageName}:${versionMayor}${platformSufix}"
 fi
 
 if [ -n "${name}" ]
 then
-    docker tag "${imageName}:${canonicalTag}" "${imageName}:${name}"
+    docker tag "${imageName}:${canonicalTag}${platformSufix}" "${imageName}:${name}${platformSufix}"
 
-    docker push "${imageName}:${canonicalTag}"
-    docker push "${imageName}:${name}"
+    docker push "${imageName}:${canonicalTag}${platformSufix}"
+    docker push "${imageName}:${name}${platformSufix}"
 fi
